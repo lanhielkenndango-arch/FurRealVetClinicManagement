@@ -5,6 +5,8 @@ FurReal Vet Clinic Management is a Java Swing and MySQL desktop application for 
 ## Submission Checklist
 
 - README documentation is provided in this file.
+- Project proposal and problem statement are stored in `docs/project-proposal.md`.
+- Data dictionary is stored in `docs/data-dictionary.md`.
 - Source code is stored in `src/furrealvetclinicmanagement/`.
 - SQL database script is stored in `database/furrealvetclinicmanagement.sql`.
 - UML/class diagram is stored in `docs/furreal-uml-class-diagram.png`.
@@ -47,8 +49,10 @@ FurRealVetClinicManagement/
 |-- database/
 |   `-- furrealvetclinicmanagement.sql
 |-- docs/
+|   |-- data-dictionary.md
 |   |-- furreal-uml-class-diagram.png
 |   |-- furreal-uml-class-diagram.svg
+|   |-- project-proposal.md
 |   `-- screenshots/
 |       `-- registration-preview.png
 |-- nbproject/
@@ -58,6 +62,11 @@ FurRealVetClinicManagement/
 |-- manifest.mf
 `-- README.md
 ```
+
+## Project Documentation
+
+- [Project Proposal and Problem Statement](docs/project-proposal.md)
+- [Data Dictionary](docs/data-dictionary.md)
 
 ## Screenshots
 
