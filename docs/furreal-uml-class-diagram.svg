@@ -1,0 +1,341 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1350" viewBox="0 0 1800 1350">
+  <defs>
+    <style>
+      .bg { fill: #f7fafc; }
+      .title { font: 700 34px Segoe UI, Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Segoe UI, Arial, sans-serif; fill: #475569; }
+      .box { fill: #ffffff; stroke: #1d4ed8; stroke-width: 2; rx: 10; }
+      .box-model { stroke: #0d52d6; }
+      .box-dao { stroke: #0f766e; }
+      .box-gui { stroke: #9333ea; }
+      .box-util { stroke: #ea580c; }
+      .head { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 2; }
+      .head-dao { fill: #ccfbf1; stroke: #0f766e; }
+      .head-gui { fill: #f3e8ff; stroke: #9333ea; }
+      .head-util { fill: #ffedd5; stroke: #ea580c; }
+      .class-name { font: 700 18px Segoe UI, Arial, sans-serif; fill: #0f172a; }
+      .stereo { font: 600 12px Segoe UI, Arial, sans-serif; fill: #475569; }
+      .member { font: 14px Consolas, Courier New, monospace; fill: #111827; }
+      .small { font: 12px Segoe UI, Arial, sans-serif; fill: #334155; }
+      .rel { fill: none; stroke: #334155; stroke-width: 2; }
+      .rel-dash { fill: none; stroke: #334155; stroke-width: 2; stroke-dasharray: 8 6; }
+      .rel-use { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 5 5; }
+      .label { font: 13px Segoe UI, Arial, sans-serif; fill: #334155; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <marker id="hollow" viewBox="0 0 14 12" refX="13" refY="6" markerWidth="12" markerHeight="12" orient="auto">
+      <path d="M 1 1 L 13 6 L 1 11 z" fill="#f7fafc" stroke="#334155" stroke-width="1.6"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1800" height="1350"/>
+  <text x="60" y="58" class="title">FurReal Vet Clinic Management - UML Class Diagram</text>
+  <text x="60" y="86" class="subtitle">Major Java classes, model entities, DAO modules, GUI frames, utilities, and key dependencies.</text>
+
+  <!-- Interface -->
+  <g transform="translate(740 120)">
+    <rect class="box box-model" width="320" height="100"/>
+    <rect class="head" width="320" height="42"/>
+    <text x="160" y="18" text-anchor="middle" class="stereo">&lt;&lt;interface&gt;&gt;</text>
+    <text x="160" y="36" text-anchor="middle" class="class-name">Identifiable</text>
+    <line x1="0" y1="42" x2="320" y2="42" stroke="#1d4ed8"/>
+    <text x="18" y="70" class="member">+ getId(): int</text>
+  </g>
+
+  <!-- Models -->
+  <g transform="translate(50 285)">
+    <rect class="box box-model" width="300" height="190"/>
+    <rect class="head" width="300" height="42"/>
+    <text x="150" y="27" text-anchor="middle" class="class-name">Client</text>
+    <line x1="0" y1="42" x2="300" y2="42" stroke="#1d4ed8"/>
+    <text x="16" y="70" class="member">- clientId: int</text>
+    <text x="16" y="92" class="member">- firstName: String</text>
+    <text x="16" y="114" class="member">- lastName: String</text>
+    <text x="16" y="136" class="member">- phoneNumber: String</text>
+    <line x1="0" y1="148" x2="300" y2="148" stroke="#bfdbfe"/>
+    <text x="16" y="172" class="member">+ getFullName(): String</text>
+  </g>
+
+  <g transform="translate(395 285)">
+    <rect class="box box-model" width="300" height="190"/>
+    <rect class="head" width="300" height="42"/>
+    <text x="150" y="27" text-anchor="middle" class="class-name">Pet</text>
+    <line x1="0" y1="42" x2="300" y2="42" stroke="#1d4ed8"/>
+    <text x="16" y="70" class="member">- petId: int</text>
+    <text x="16" y="92" class="member">- clientId: int</text>
+    <text x="16" y="114" class="member">- petName: String</text>
+    <text x="16" y="136" class="member">- petType: String</text>
+    <text x="16" y="158" class="member">- breed: String</text>
+    <text x="16" y="180" class="member">- age: int</text>
+  </g>
+
+  <g transform="translate(740 285)">
+    <rect class="box box-model" width="300" height="168"/>
+    <rect class="head" width="300" height="42"/>
+    <text x="150" y="27" text-anchor="middle" class="class-name">ClinicService</text>
+    <line x1="0" y1="42" x2="300" y2="42" stroke="#1d4ed8"/>
+    <text x="16" y="70" class="member">- serviceId: int</text>
+    <text x="16" y="92" class="member">- serviceName: String</text>
+    <text x="16" y="114" class="member">- category: String</text>
+    <text x="16" y="136" class="member">- price: BigDecimal</text>
+  </g>
+
+  <g transform="translate(1085 285)">
+    <rect class="box box-model" width="300" height="190"/>
+    <rect class="head" width="300" height="42"/>
+    <text x="150" y="27" text-anchor="middle" class="class-name">Visit</text>
+    <line x1="0" y1="42" x2="300" y2="42" stroke="#1d4ed8"/>
+    <text x="16" y="70" class="member">- visitId: int</text>
+    <text x="16" y="92" class="member">- clientId: int</text>
+    <text x="16" y="114" class="member">- petId: int</text>
+    <text x="16" y="136" class="member">- visitDate: LocalDate</text>
+    <text x="16" y="158" class="member">- status: String</text>
+    <text x="16" y="180" class="member">- total: BigDecimal</text>
+  </g>
+
+  <g transform="translate(1430 285)">
+    <rect class="box box-model" width="320" height="190"/>
+    <rect class="head" width="320" height="42"/>
+    <text x="160" y="27" text-anchor="middle" class="class-name">VisitService</text>
+    <line x1="0" y1="42" x2="320" y2="42" stroke="#1d4ed8"/>
+    <text x="16" y="70" class="member">- visitServiceId: int</text>
+    <text x="16" y="92" class="member">- visitId: int</text>
+    <text x="16" y="114" class="member">- serviceId: int</text>
+    <text x="16" y="136" class="member">- quantity: int</text>
+    <text x="16" y="158" class="member">- lineTotal: BigDecimal</text>
+  </g>
+
+  <!-- Model implements interface -->
+  <path class="rel-dash" d="M200 285 L780 220" marker-end="url(#hollow)"/>
+  <path class="rel-dash" d="M545 285 L830 220" marker-end="url(#hollow)"/>
+  <path class="rel-dash" d="M890 285 L900 220" marker-end="url(#hollow)"/>
+  <path class="rel-dash" d="M1235 285 L970 220" marker-end="url(#hollow)"/>
+  <path class="rel-dash" d="M1590 285 L1030 220" marker-end="url(#hollow)"/>
+
+  <!-- DAOs -->
+  <g transform="translate(80 560)">
+    <rect class="box box-dao" width="330" height="190"/>
+    <rect class="head head-dao" width="330" height="42"/>
+    <text x="165" y="27" text-anchor="middle" class="class-name">ClientDAO</text>
+    <line x1="0" y1="42" x2="330" y2="42" stroke="#0f766e"/>
+    <text x="16" y="70" class="member">+ addClient(Client): int</text>
+    <text x="16" y="92" class="member">+ authenticate(...): boolean</text>
+    <text x="16" y="114" class="member">+ loadClientsToTable(...): void</text>
+    <text x="16" y="136" class="member">+ updateClient(...): boolean</text>
+    <text x="16" y="158" class="member">+ deleteClient(int): boolean</text>
+  </g>
+
+  <g transform="translate(450 560)">
+    <rect class="box box-dao" width="330" height="168"/>
+    <rect class="head head-dao" width="330" height="42"/>
+    <text x="165" y="27" text-anchor="middle" class="class-name">PetDAO</text>
+    <line x1="0" y1="42" x2="330" y2="42" stroke="#0f766e"/>
+    <text x="16" y="70" class="member">+ addPet(Pet): void</text>
+    <text x="16" y="92" class="member">+ loadPetsToTable(...): void</text>
+    <text x="16" y="114" class="member">+ loadAllPetsToTable(...): void</text>
+    <text x="16" y="136" class="member">+ updatePet(...): void</text>
+    <text x="16" y="158" class="member">+ deletePet(int): void</text>
+  </g>
+
+  <g transform="translate(820 560)">
+    <rect class="box box-dao" width="330" height="168"/>
+    <rect class="head head-dao" width="330" height="42"/>
+    <text x="165" y="27" text-anchor="middle" class="class-name">ServiceDAO</text>
+    <line x1="0" y1="42" x2="330" y2="42" stroke="#0f766e"/>
+    <text x="16" y="70" class="member">+ addService(...): boolean</text>
+    <text x="16" y="92" class="member">+ loadServicesToTable(...): void</text>
+    <text x="16" y="114" class="member">+ updateService(...): boolean</text>
+    <text x="16" y="136" class="member">+ deleteService(int): boolean</text>
+  </g>
+
+  <g transform="translate(1190 560)">
+    <rect class="box box-dao" width="350" height="190"/>
+    <rect class="head head-dao" width="350" height="42"/>
+    <text x="175" y="27" text-anchor="middle" class="class-name">VisitDAO</text>
+    <line x1="0" y1="42" x2="350" y2="42" stroke="#0f766e"/>
+    <text x="16" y="70" class="member">+ addVisit(...): boolean</text>
+    <text x="16" y="92" class="member">+ loadVisitsToTable(...): void</text>
+    <text x="16" y="114" class="member">+ loadVisitServicesToTable(...): void</text>
+    <text x="16" y="136" class="member">+ updateVisit(...): boolean</text>
+    <text x="16" y="158" class="member">+ deleteVisit(int): boolean</text>
+  </g>
+
+  <!-- Database utilities -->
+  <g transform="translate(1580 555)">
+    <rect class="box box-util" width="180" height="92"/>
+    <rect class="head head-util" width="180" height="36"/>
+    <text x="90" y="24" text-anchor="middle" class="class-name">DBConnection</text>
+    <line x1="0" y1="36" x2="180" y2="36" stroke="#ea580c"/>
+    <text x="12" y="62" class="member">+ getConnection()</text>
+  </g>
+  <g transform="translate(1580 675)">
+    <rect class="box box-util" width="180" height="92"/>
+    <rect class="head head-util" width="180" height="36"/>
+    <text x="90" y="24" text-anchor="middle" class="class-name">DatabaseSetup</text>
+    <line x1="0" y1="36" x2="180" y2="36" stroke="#ea580c"/>
+    <text x="12" y="62" class="member">+ ensureTables()</text>
+  </g>
+
+  <!-- GUI -->
+  <g transform="translate(40 855)">
+    <rect class="box box-gui" width="240" height="126"/>
+    <rect class="head head-gui" width="240" height="38"/>
+    <text x="120" y="25" text-anchor="middle" class="class-name">Login</text>
+    <line x1="0" y1="38" x2="240" y2="38" stroke="#9333ea"/>
+    <text x="14" y="66" class="member">+ setVisible(true)</text>
+    <text x="14" y="88" class="member">- authenticate user</text>
+    <text x="14" y="110" class="member">- open dashboard</text>
+  </g>
+
+  <g transform="translate(315 855)">
+    <rect class="box box-gui" width="240" height="126"/>
+    <rect class="head head-gui" width="240" height="38"/>
+    <text x="120" y="25" text-anchor="middle" class="class-name">Registration</text>
+    <line x1="0" y1="38" x2="240" y2="38" stroke="#9333ea"/>
+    <text x="14" y="66" class="member">- validate input</text>
+    <text x="14" y="88" class="member">- create Client</text>
+    <text x="14" y="110" class="member">- save account</text>
+  </g>
+
+  <g transform="translate(590 855)">
+    <rect class="box box-gui" width="240" height="126"/>
+    <rect class="head head-gui" width="240" height="38"/>
+    <text x="120" y="25" text-anchor="middle" class="class-name">Dashboard</text>
+    <line x1="0" y1="38" x2="240" y2="38" stroke="#9333ea"/>
+    <text x="14" y="66" class="member">- openClientPet()</text>
+    <text x="14" y="88" class="member">- openServices()</text>
+    <text x="14" y="110" class="member">- openVisits()</text>
+  </g>
+
+  <g transform="translate(865 855)">
+    <rect class="box box-gui" width="250" height="148"/>
+    <rect class="head head-gui" width="250" height="38"/>
+    <text x="125" y="25" text-anchor="middle" class="class-name">ClientPet</text>
+    <line x1="0" y1="38" x2="250" y2="38" stroke="#9333ea"/>
+    <text x="14" y="66" class="member">- loadClients()</text>
+    <text x="14" y="88" class="member">- loadPets()</text>
+    <text x="14" y="110" class="member">- add/update/delete pet</text>
+    <text x="14" y="132" class="member">- update/delete owner</text>
+  </g>
+
+  <g transform="translate(1150 855)">
+    <rect class="box box-gui" width="250" height="148"/>
+    <rect class="head head-gui" width="250" height="38"/>
+    <text x="125" y="25" text-anchor="middle" class="class-name">Services</text>
+    <line x1="0" y1="38" x2="250" y2="38" stroke="#9333ea"/>
+    <text x="14" y="66" class="member">- loadServices()</text>
+    <text x="14" y="88" class="member">- addService()</text>
+    <text x="14" y="110" class="member">- updateService()</text>
+    <text x="14" y="132" class="member">- deleteService()</text>
+  </g>
+
+  <g transform="translate(1435 855)">
+    <rect class="box box-gui" width="310" height="148"/>
+    <rect class="head head-gui" width="310" height="38"/>
+    <text x="155" y="25" text-anchor="middle" class="class-name">VisitAndTransaction</text>
+    <line x1="0" y1="38" x2="310" y2="38" stroke="#9333ea"/>
+    <text x="14" y="66" class="member">- saveVisit()</text>
+    <text x="14" y="88" class="member">- loadVisitRecords()</text>
+    <text x="14" y="110" class="member">- updateSelectedVisit()</text>
+    <text x="14" y="132" class="member">- deleteSelectedVisit()</text>
+  </g>
+
+  <!-- Utility classes -->
+  <g transform="translate(80 1110)">
+    <rect class="box box-util" width="310" height="125"/>
+    <rect class="head head-util" width="310" height="38"/>
+    <text x="155" y="25" text-anchor="middle" class="class-name">ValidationUtil</text>
+    <line x1="0" y1="38" x2="310" y2="38" stroke="#ea580c"/>
+    <text x="14" y="66" class="member">+ clean(...): String</text>
+    <text x="14" y="88" class="member">+ hasBlank(...): boolean</text>
+    <text x="14" y="110" class="member">+ isValidEmail(...): boolean</text>
+  </g>
+
+  <g transform="translate(430 1110)">
+    <rect class="box box-util" width="310" height="125"/>
+    <rect class="head head-util" width="310" height="38"/>
+    <text x="155" y="25" text-anchor="middle" class="class-name">PhoneNumberUtil</text>
+    <line x1="0" y1="38" x2="310" y2="38" stroke="#ea580c"/>
+    <text x="14" y="66" class="member">+ applyPhoneMask(...)</text>
+    <text x="14" y="88" class="member">+ format(...): String</text>
+    <text x="14" y="110" class="member">+ isValidPhilippineMobile()</text>
+  </g>
+
+  <g transform="translate(780 1110)">
+    <rect class="box box-util" width="310" height="125"/>
+    <rect class="head head-util" width="310" height="38"/>
+    <text x="155" y="25" text-anchor="middle" class="class-name">DateInputUtil</text>
+    <line x1="0" y1="38" x2="310" y2="38" stroke="#ea580c"/>
+    <text x="14" y="66" class="member">+ applyDateMask(...)</text>
+    <text x="14" y="88" class="member">+ normalizeDate(...)</text>
+    <text x="14" y="110" class="member">+ toDisplayDate(...)</text>
+  </g>
+
+  <g transform="translate(1130 1110)">
+    <rect class="box box-util" width="310" height="125"/>
+    <rect class="head head-util" width="310" height="38"/>
+    <text x="155" y="25" text-anchor="middle" class="class-name">TextPlaceholderUtil</text>
+    <line x1="0" y1="38" x2="310" y2="38" stroke="#ea580c"/>
+    <text x="14" y="66" class="member">+ applyPlaceholder(...)</text>
+    <text x="14" y="88" class="member">+ clean(...): String</text>
+    <text x="14" y="110" class="member">+ resetPlaceholder(...)</text>
+  </g>
+
+  <g transform="translate(1480 1110)">
+    <rect class="box box-gui" width="280" height="125"/>
+    <rect class="head head-gui" width="280" height="38"/>
+    <text x="140" y="25" text-anchor="middle" class="class-name">FurRealVetClinicManagement</text>
+    <line x1="0" y1="38" x2="280" y2="38" stroke="#9333ea"/>
+    <text x="14" y="66" class="member">+ main(String[]): void</text>
+    <text x="14" y="88" class="member">+ setup FlatLaf</text>
+    <text x="14" y="110" class="member">+ open Login</text>
+  </g>
+
+  <!-- DAO/model dependencies -->
+  <path class="rel-use" d="M245 560 L205 475" marker-end="url(#arrow)"/>
+  <text x="230" y="520" class="label">uses</text>
+  <path class="rel-use" d="M615 560 L545 475" marker-end="url(#arrow)"/>
+  <text x="585" y="520" class="label">uses</text>
+  <path class="rel-use" d="M985 560 L890 453" marker-end="url(#arrow)"/>
+  <text x="944" y="520" class="label">uses</text>
+  <path class="rel-use" d="M1365 560 L1235 475" marker-end="url(#arrow)"/>
+  <text x="1300" y="520" class="label">uses</text>
+  <path class="rel-use" d="M1390 560 L1590 475" marker-end="url(#arrow)"/>
+
+  <!-- DAO database dependencies summarized to keep the diagram readable -->
+  <path class="rel-use" d="M1540 610 L1580 600" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M1540 720 L1580 720" marker-end="url(#arrow)"/>
+  <text x="1350" y="790" class="label">DAO classes use DBConnection and DatabaseSetup</text>
+
+  <!-- GUI dependencies -->
+  <path class="rel-use" d="M160 855 L245 750" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M435 855 L245 750" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M990 855 L245 750" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M990 855 L615 728" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M1275 855 L985 728" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M1590 855 L1365 750" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M1590 855 L615 728" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M710 855 L160 981" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M710 855 L990 855" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M710 855 L1275 855" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M710 855 L1590 855" marker-end="url(#arrow)"/>
+  <path class="rel-use" d="M1620 1110 L710 981" marker-end="url(#arrow)"/>
+
+  <!-- Legend -->
+  <g transform="translate(60 1268)">
+    <rect x="0" y="0" width="18" height="18" fill="#dbeafe" stroke="#1d4ed8"/>
+    <text x="28" y="14" class="small">Model / entity classes</text>
+    <rect x="210" y="0" width="18" height="18" fill="#ccfbf1" stroke="#0f766e"/>
+    <text x="238" y="14" class="small">DAO / database processing classes</text>
+    <rect x="495" y="0" width="18" height="18" fill="#f3e8ff" stroke="#9333ea"/>
+    <text x="523" y="14" class="small">GUI / JFrame classes</text>
+    <rect x="700" y="0" width="18" height="18" fill="#ffedd5" stroke="#ea580c"/>
+    <text x="728" y="14" class="small">Utility / setup classes</text>
+    <line x1="910" y1="9" x2="970" y2="9" class="rel-dash" marker-end="url(#hollow)"/>
+    <text x="985" y="14" class="small">implements</text>
+    <line x1="1105" y1="9" x2="1165" y2="9" class="rel-use" marker-end="url(#arrow)"/>
+    <text x="1180" y="14" class="small">uses / depends on</text>
+  </g>
+</svg>
