@@ -56,6 +56,7 @@ public class Login extends javax.swing.JFrame {
         setHighQualityImage();
         arrangeLoginLikeReference();
         setupPlaceholderLogic();
+        TextFieldFocusUtil.install(getContentPane());
         this.setLocationRelativeTo(null);
     }
 

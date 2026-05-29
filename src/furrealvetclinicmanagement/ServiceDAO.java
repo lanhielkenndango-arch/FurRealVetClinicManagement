@@ -119,26 +119,28 @@ public class ServiceDAO {
             return false;
         }
 
-        try {
-            boolean originalAutoCommit = conn.getAutoCommit();
-            conn.setAutoCommit(false);
-            try (PreparedStatement visitServices = conn.prepareStatement(
-                    "DELETE FROM visit_services WHERE service_id = ?");
-                 PreparedStatement services = conn.prepareStatement(
-                         "DELETE FROM clinic_services WHERE service_id = ?")) {
-                visitServices.setInt(1, serviceId);
-                visitServices.executeUpdate();
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "DELETE FROM clinic_services WHERE service_id = ?")) {
+            stmt.setInt(1, serviceId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-                services.setInt(1, serviceId);
-                boolean deleted = services.executeUpdate() > 0;
-                conn.commit();
-                conn.setAutoCommit(originalAutoCommit);
-                return deleted;
-            } catch (SQLException e) {
-                conn.rollback();
-                conn.setAutoCommit(originalAutoCommit);
-                throw e;
-            }
+    public boolean serviceHasVisitHistory(int serviceId) {
+        DatabaseSetup.ensureTables();
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) {
+            return false;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT 1 FROM visit_services WHERE service_id = ? LIMIT 1")) {
+            stmt.setInt(1, serviceId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

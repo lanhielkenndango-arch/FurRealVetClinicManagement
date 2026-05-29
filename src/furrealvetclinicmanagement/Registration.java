@@ -63,6 +63,7 @@ public class Registration extends javax.swing.JFrame {
         roundedButton1.addActionListener(this::roundedButton1ActionPerformed);
         setupPlaceholderLogic();
         setupEnterKeyNavigation();
+        TextFieldFocusUtil.install(getContentPane());
         this.setLocationRelativeTo(null);
     }
 

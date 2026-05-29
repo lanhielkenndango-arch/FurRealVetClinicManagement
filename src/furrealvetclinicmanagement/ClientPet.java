@@ -44,6 +44,7 @@ public class ClientPet extends javax.swing.JFrame {
         design.DarkTableStyler.apply(jTable1, jScrollPane1);
         design.DarkTableStyler.apply(jTable2, jScrollPane2);
         setupLogic();
+        TextFieldFocusUtil.install(getContentPane());
         
         this.setLocationRelativeTo(null);
     }

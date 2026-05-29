@@ -6,11 +6,14 @@ package furrealvetclinicmanagement;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -28,6 +31,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -53,6 +57,7 @@ public class VisitAndTransaction extends javax.swing.JFrame {
     private design.RoundTextField visitRecordSearch;
     private design.RoundTextField visitRecordDateSearch;
     private design.RoundTextField editVisitDate;
+    private design.RoundTextField editVisitTotal;
     private JComboBox<String> visitStatusFilter;
     private JComboBox<String> editVisitStatus;
 
@@ -65,6 +70,7 @@ public class VisitAndTransaction extends javax.swing.JFrame {
         design.DarkTableStyler.apply(jTable1, jScrollPane1);
         setupVisitLogic();
         setupVisitRecordsTab();
+        TextFieldFocusUtil.install(getContentPane());
         
         this.setLocationRelativeTo(null);
     }
@@ -271,6 +277,8 @@ public class VisitAndTransaction extends javax.swing.JFrame {
 
         addVisitSearchListener(visitRecordSearch);
         addVisitSearchListener(visitRecordDateSearch);
+        addVisitFilterFocusRefresh(visitRecordSearch);
+        addVisitFilterFocusRefresh(visitRecordDateSearch);
         visitStatusFilter.addActionListener(evt -> loadVisitRecords());
 
         gbc.gridwidth = 1;
@@ -339,7 +347,7 @@ public class VisitAndTransaction extends javax.swing.JFrame {
 
     private JPanel createVisitEditPanel() {
         JPanel editPanel = darkPanel(new GridBagLayout());
-        editPanel.setPreferredSize(new Dimension(300, 170));
+        editPanel.setPreferredSize(new Dimension(300, 200));
         GridBagConstraints gbc = baseGridBagConstraints();
 
         JLabel title = sectionLabel("Update Visit");
@@ -349,6 +357,7 @@ public class VisitAndTransaction extends javax.swing.JFrame {
         editPanel.add(title, gbc);
 
         editVisitDate = new design.RoundTextField();
+        editVisitTotal = new design.RoundTextField();
         editVisitStatus = new JComboBox<>(new String[] {"Scheduled", "Completed", "Cancelled"});
         DateInputUtil.applyDateMask(editVisitDate);
 
@@ -368,12 +377,20 @@ public class VisitAndTransaction extends javax.swing.JFrame {
         gbc.weightx = 1.0;
         editPanel.add(editVisitStatus, gbc);
 
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.weightx = 0;
+        editPanel.add(fieldLabel("Total:"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        editPanel.add(editVisitTotal, gbc);
+
         studentenrollmentsystem.RoundedButton update = recordButton("Update", new Color(13, 82, 214));
         update.addActionListener(evt -> updateSelectedVisit());
         studentenrollmentsystem.RoundedButton delete = recordButton("Delete", new Color(180, 45, 45));
         delete.addActionListener(evt -> deleteSelectedVisit());
 
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridx = 0;
         gbc.weightx = 0.5;
         editPanel.add(update, gbc);
@@ -422,6 +439,22 @@ public class VisitAndTransaction extends javax.swing.JFrame {
         });
     }
 
+    private void addVisitFilterFocusRefresh(JTextField field) {
+        field.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (!isVisitRecordsTableComponent(e.getOppositeComponent())) {
+                    loadVisitRecords();
+                }
+            }
+        });
+    }
+
+    private boolean isVisitRecordsTableComponent(Component component) {
+        return component == visitRecordsTable
+                || (component != null && SwingUtilities.isDescendingFrom(component, visitRecordsTable));
+    }
+
     private void loadVisitRecords() {
         if (visitRecordsTable == null) {
             return;
@@ -453,6 +486,7 @@ public class VisitAndTransaction extends javax.swing.JFrame {
         selectedVisitId = visitRecordIds.get(modelRow);
         editVisitDate.setText(visitRecordsTable.getModel().getValueAt(modelRow, 3).toString());
         editVisitStatus.setSelectedItem(visitRecordsTable.getModel().getValueAt(modelRow, 4).toString());
+        editVisitTotal.setText(cleanCurrencyText(visitRecordsTable.getModel().getValueAt(modelRow, 5).toString()));
         visitDAO.loadVisitServicesToTable((DefaultTableModel) visitDetailsTable.getModel(), selectedVisitId);
     }
 
@@ -463,6 +497,9 @@ public class VisitAndTransaction extends javax.swing.JFrame {
         }
         if (editVisitDate != null) {
             editVisitDate.setText("");
+        }
+        if (editVisitTotal != null) {
+            editVisitTotal.setText("");
         }
         if (editVisitStatus != null) {
             editVisitStatus.setSelectedIndex(0);
@@ -490,7 +527,13 @@ public class VisitAndTransaction extends javax.swing.JFrame {
             return;
         }
 
-        if (visitDAO.updateVisit(selectedVisitId, date, status)) {
+        Double total = parseCurrencyAmount(editVisitTotal.getText());
+        if (total == null) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid total.");
+            return;
+        }
+
+        if (visitDAO.updateVisit(selectedVisitId, date, status, total)) {
             JOptionPane.showMessageDialog(this, "Visit updated successfully.");
             loadVisitRecords();
         } else {
@@ -538,6 +581,22 @@ public class VisitAndTransaction extends javax.swing.JFrame {
         label.setForeground(Color.WHITE);
         label.setFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 12));
         return label;
+    }
+
+    private Double parseCurrencyAmount(String value) {
+        try {
+            double amount = Double.parseDouble(cleanCurrencyText(value));
+            if (amount < 0 || Double.isNaN(amount) || Double.isInfinite(amount)) {
+                return null;
+            }
+            return amount;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private String cleanCurrencyText(String value) {
+        return value == null ? "" : value.replace("Php", "").replace(",", "").trim();
     }
 
     private GridBagConstraints baseGridBagConstraints() {

@@ -50,6 +50,7 @@ public class Services extends javax.swing.JFrame {
         
         setHighQualityImage(); 
         setupServiceLogic();
+        TextFieldFocusUtil.install(getContentPane());
         
         this.setLocationRelativeTo(null);
     }
@@ -262,6 +263,12 @@ public class Services extends javax.swing.JFrame {
     private void deleteService() {
         if (selectedServiceId == -1) {
             JOptionPane.showMessageDialog(this, "Please select a service first.");
+            return;
+        }
+
+        if (serviceDAO.serviceHasVisitHistory(selectedServiceId)) {
+            JOptionPane.showMessageDialog(this,
+                    "This service is used by saved visit records and cannot be deleted.");
             return;
         }
 

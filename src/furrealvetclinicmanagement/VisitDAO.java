@@ -155,7 +155,9 @@ public class VisitDAO {
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, visitId);
             ResultSet rs = stmt.executeQuery();
+            boolean hasServiceDetails = false;
             while (rs.next()) {
+                hasServiceDetails = true;
                 model.addRow(new Object[] {
                     rs.getString("service_name"),
                     rs.getString("category"),
@@ -163,27 +165,125 @@ public class VisitDAO {
                     String.format("Php %.2f", rs.getDouble("line_total"))
                 });
             }
+            if (!hasServiceDetails) {
+                VisitServiceDetail recovered = recoverMissingVisitService(conn, visitId);
+                if (recovered != null) {
+                    model.addRow(new Object[] {
+                        recovered.serviceName,
+                        recovered.category,
+                        recovered.quantity,
+                        String.format("Php %.2f", recovered.lineTotal)
+                    });
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public boolean updateVisit(int visitId, String visitDate, String status) {
+    private VisitServiceDetail recoverMissingVisitService(Connection conn, int visitId) throws SQLException {
+        String query = "SELECT total FROM visits WHERE visit_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, visitId);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                return null;
+            }
+
+            double total = rs.getDouble("total");
+            ServiceReference service = findServiceByName(conn, "Rabbies Vaccine");
+            if (service == null) {
+                service = findServiceByName(conn, "Rabies Vaccine");
+            }
+            if (service == null) {
+                service = createService(conn, "Rabbies Vaccine", "Vaccines", total);
+            }
+
+            addVisitService(conn, visitId, service.serviceId, total);
+            return new VisitServiceDetail(service.serviceName, service.category, 1, total);
+        }
+    }
+
+    private ServiceReference findServiceByName(Connection conn, String serviceName) throws SQLException {
+        String query = """
+                SELECT service_id, service_name, category
+                FROM clinic_services
+                WHERE service_name = ?
+                ORDER BY service_id
+                LIMIT 1
+                """;
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, serviceName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new ServiceReference(
+                        rs.getInt("service_id"),
+                        rs.getString("service_name"),
+                        rs.getString("category"));
+            }
+        }
+        return null;
+    }
+
+    private ServiceReference createService(Connection conn, String serviceName,
+            String category, double price) throws SQLException {
+        String query = """
+                INSERT INTO clinic_services (service_name, category, price, service_date)
+                VALUES (?, ?, ?, '')
+                """;
+        try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, serviceName);
+            stmt.setString(2, category);
+            stmt.setDouble(3, price);
+            stmt.executeUpdate();
+
+            ResultSet keys = stmt.getGeneratedKeys();
+            if (!keys.next()) {
+                throw new SQLException("Service insert did not return a generated key.");
+            }
+            return new ServiceReference(keys.getInt(1), serviceName, category);
+        }
+    }
+
+    public boolean updateVisit(int visitId, String visitDate, String status, double total) {
         DatabaseSetup.ensureTables();
         Connection conn = DBConnection.getConnection();
         if (conn == null) {
             return false;
         }
 
-        String query = "UPDATE visits SET visit_date = ?, status = ? WHERE visit_id = ?";
+        String query = "UPDATE visits SET visit_date = ?, status = ?, total = ? WHERE visit_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, visitDate);
             stmt.setString(2, status);
-            stmt.setInt(3, visitId);
-            return stmt.executeUpdate() > 0;
+            stmt.setDouble(3, total);
+            stmt.setInt(4, visitId);
+            boolean updated = stmt.executeUpdate() > 0;
+            if (updated) {
+                syncSingleVisitServiceTotal(conn, visitId, total);
+            }
+            return updated;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private void syncSingleVisitServiceTotal(Connection conn, int visitId, double total) throws SQLException {
+        String countQuery = "SELECT COUNT(*) AS detail_count FROM visit_services WHERE visit_id = ?";
+        try (PreparedStatement countStmt = conn.prepareStatement(countQuery)) {
+            countStmt.setInt(1, visitId);
+            ResultSet rs = countStmt.executeQuery();
+            if (!rs.next() || rs.getInt("detail_count") != 1) {
+                return;
+            }
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "UPDATE visit_services SET quantity = 1, line_total = ? WHERE visit_id = ?")) {
+            stmt.setDouble(1, total);
+            stmt.setInt(2, visitId);
+            stmt.executeUpdate();
         }
     }
 
@@ -214,10 +314,11 @@ public class VisitDAO {
             }
         }
 
-        String insertQuery = "INSERT INTO clinic_services (service_name, category, price) VALUES (?, 'Visit', ?)";
+        String insertQuery = "INSERT INTO clinic_services (service_name, category, price) VALUES (?, ?, ?)";
         try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
             insertStmt.setString(1, serviceName);
-            insertStmt.setDouble(2, price);
+            insertStmt.setString(2, defaultServiceCategory(serviceName));
+            insertStmt.setDouble(3, price);
             insertStmt.executeUpdate();
 
             ResultSet keys = insertStmt.getGeneratedKeys();
@@ -237,6 +338,53 @@ public class VisitDAO {
             stmt.setInt(2, serviceId);
             stmt.setDouble(3, price);
             stmt.executeUpdate();
+        }
+    }
+
+    private String defaultServiceCategory(String serviceName) {
+        if (serviceName == null) {
+            return "General";
+        }
+
+        String normalizedName = serviceName.trim().toLowerCase();
+        if (normalizedName.contains("vaccine")) {
+            return "Vaccines";
+        }
+        if (normalizedName.contains("teeth") || normalizedName.contains("dental")) {
+            return "Dental";
+        }
+        if (normalizedName.contains("nail")
+                || normalizedName.contains("hair")
+                || normalizedName.contains("styling")
+                || normalizedName.contains("flea")) {
+            return "Grooming";
+        }
+        return "General";
+    }
+
+    private static class ServiceReference {
+        private final int serviceId;
+        private final String serviceName;
+        private final String category;
+
+        private ServiceReference(int serviceId, String serviceName, String category) {
+            this.serviceId = serviceId;
+            this.serviceName = serviceName;
+            this.category = category;
+        }
+    }
+
+    private static class VisitServiceDetail {
+        private final String serviceName;
+        private final String category;
+        private final int quantity;
+        private final double lineTotal;
+
+        private VisitServiceDetail(String serviceName, String category, int quantity, double lineTotal) {
+            this.serviceName = serviceName;
+            this.category = category;
+            this.quantity = quantity;
+            this.lineTotal = lineTotal;
         }
     }
 }
