@@ -2,7 +2,7 @@
 
 FurReal Vet Clinic Management is a Java Swing and MySQL desktop application for managing veterinary clinic clients, pets, services, visits, and transactions. It was created as a final project and organized for the Phase 9 - Documentation and GitHub Submission requirement.
 
-## Phase 9 Submission Checklist
+## Submission Checklist
 
 - Screenshots are stored in `docs/screenshots/`.
 - README documentation is provided in this file.
@@ -143,4 +143,7 @@ furrealvetclinicmanagement.FurRealVetClinicManagement
 
 ## Developer
 
-Lanhiel Kenndango
+Lanhiel Kenn A. Dango
+
+
+
