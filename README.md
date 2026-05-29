@@ -69,6 +69,22 @@ FurRealVetClinicManagement/
 
 <img width="1398" height="931" alt="image" src="https://github.com/user-attachments/assets/b78094bf-c17f-49a2-a778-df85fe7836fe" />
 
+### Dashboard Screen
+
+<img width="1125" height="781" alt="image" src="https://github.com/user-attachments/assets/0de9d57e-be2b-45c2-955e-88f70358f348" />
+
+### Client & Pet Screen
+
+<img width="1131" height="738" alt="image" src="https://github.com/user-attachments/assets/04ad4e63-910d-467f-8bfb-e05ae91972c0" />
+
+### Visit & Transaction Screen
+
+<img width="1124" height="761" alt="image" src="https://github.com/user-attachments/assets/c718223d-7d52-47b2-9299-d4e03c8969b9" />
+<img width="1117" height="755" alt="image" src="https://github.com/user-attachments/assets/bf36d9ac-dc79-40cc-8010-e75392f5c7bb" />
+
+### Service Screen
+
+<img width="1065" height="883" alt="image" src="https://github.com/user-attachments/assets/2418df47-d446-4044-8155-a31e167f5b4e" />
 
 ### UML/Class Diagram
 
