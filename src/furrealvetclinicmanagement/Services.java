@@ -37,6 +37,7 @@ public class Services extends javax.swing.JFrame {
     private final List<Integer> serviceIds = new ArrayList<>();
     private int selectedServiceId = -1;
     private boolean loadingServices;
+    private boolean revertingTableEdit;
     private AWTEventListener tableSelectionClearer;
 
     /**
@@ -204,7 +205,8 @@ public class Services extends javax.swing.JFrame {
         jTable1.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(categoryEditor));
 
         jTable1.getModel().addTableModelListener(evt -> {
-            if (loadingServices || evt.getType() != TableModelEvent.UPDATE || evt.getFirstRow() < 0) {
+            if (loadingServices || revertingTableEdit
+                    || evt.getType() != TableModelEvent.UPDATE || evt.getFirstRow() < 0) {
                 return;
             }
             saveTableEdit(evt.getFirstRow());
@@ -308,15 +310,13 @@ public class Services extends javax.swing.JFrame {
         String serviceDate = DateInputUtil.normalizeDate(DateInputUtil.cleanInput(tableValue(modelRow, 3)));
 
         if (ValidationUtil.hasBlank(serviceName, category, priceText, serviceDate)) {
-            JOptionPane.showMessageDialog(this, "Please complete service name, category, base price, and date.");
-            reloadServicesLater();
+            rejectTableEdit("Please complete service name, category, base price, and date.");
             return;
         }
 
         Double basePrice = parseBasePrice(priceText);
         if (basePrice == null) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid base price.");
-            reloadServicesLater();
+            rejectTableEdit("Please enter a valid base price.");
             return;
         }
 
@@ -324,6 +324,20 @@ public class Services extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Service was not updated. Please check the database connection.");
         }
         reloadServicesLater();
+    }
+
+    private void rejectTableEdit(String message) {
+        revertingTableEdit = true;
+        SwingUtilities.invokeLater(() -> {
+            try {
+                JOptionPane.showMessageDialog(this, message);
+                loadServices();
+                jTable1.clearSelection();
+                jTable1.repaint();
+            } finally {
+                revertingTableEdit = false;
+            }
+        });
     }
 
     private String tableValue(int row, int column) {
