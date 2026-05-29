@@ -65,6 +65,11 @@ FurRealVetClinicManagement/
 
 ![Registration Screen](docs/screenshots/registration-preview.png)
 
+### Login Screen
+
+<img width="1398" height="931" alt="image" src="https://github.com/user-attachments/assets/b78094bf-c17f-49a2-a778-df85fe7836fe" />
+
+
 ### UML/Class Diagram
 
 ![UML Class Diagram](docs/furreal-uml-class-diagram.png)
