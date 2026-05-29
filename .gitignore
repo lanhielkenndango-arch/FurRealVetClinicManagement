@@ -1,0 +1,16 @@
+# NetBeans and Java build output
+/build/
+/dist/
+*.class
+*.jar
+
+# Local NetBeans user settings
+/nbproject/private/
+
+# Test and log output
+/test/results/
+*.log
+
+# Operating system metadata
+.DS_Store
+Thumbs.db

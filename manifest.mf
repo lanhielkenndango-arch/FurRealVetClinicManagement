@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
+Implementation-Title: FurReal Vet Clinic Management
+Implementation-Version: Final Project Requirements
 X-COMMENT: Main-Class will be added automatically by build
-
