@@ -73,13 +73,67 @@ public class ClientDAO {
 
         String query = """
                 SELECT client_id FROM clients
-                WHERE BINARY first_name = ?
-                  AND BINARY last_name = ?
+                WHERE CAST(first_name AS BINARY) = CAST(? AS BINARY)
+                  AND CAST(last_name AS BINARY) = CAST(? AS BINARY)
+                LIMIT 1
                 """;
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, firstName);
             stmt.setString(2, lastName);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean clientNameExistsForOtherClient(int clientId, String firstName, String lastName) {
+        DatabaseSetup.ensureTables();
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) {
+            return false;
+        }
+
+        String query = """
+                SELECT client_id FROM clients
+                WHERE CAST(first_name AS BINARY) = CAST(? AS BINARY)
+                  AND CAST(last_name AS BINARY) = CAST(? AS BINARY)
+                  AND client_id <> ?
+                LIMIT 1
+                """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, firstName);
+            stmt.setString(2, lastName);
+            stmt.setInt(3, clientId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean clientPhoneExistsForOtherClient(int clientId, String phoneNumber) {
+        DatabaseSetup.ensureTables();
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) {
+            return false;
+        }
+
+        String query = """
+                SELECT client_id FROM clients
+                WHERE (phone = ? OR REPLACE(phone, '-', '') = ?)
+                  AND client_id <> ?
+                LIMIT 1
+                """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, phoneNumber);
+            stmt.setString(2, PhoneNumberUtil.digitsOnly(phoneNumber));
+            stmt.setInt(3, clientId);
             ResultSet rs = stmt.executeQuery();
             return rs.next();
         } catch (SQLException e) {
@@ -98,17 +152,66 @@ public class ClientDAO {
         }
 
         String search = searchText == null ? "" : searchText.trim();
+        String searchPattern = "%" + search + "%";
+        String digitSearch = PhoneNumberUtil.digitsOnly(search);
+        String digitPattern = "%" + digitSearch + "%";
         String query = """
                 SELECT client_id, first_name, last_name, phone
                 FROM clients
                 WHERE ? = ''
                    OR CAST(client_id AS CHAR) LIKE ?
+                   OR phone LIKE ?
+                   OR (? <> '' AND REPLACE(phone, '-', '') LIKE ?)
                 ORDER BY client_id
                 """;
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, search);
-            stmt.setString(2, "%" + search + "%");
+            stmt.setString(2, searchPattern);
+            stmt.setString(3, searchPattern);
+            stmt.setString(4, digitSearch);
+            stmt.setString(5, digitPattern);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                model.addRow(new Object[] {
+                    rs.getInt("client_id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("phone")
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadClientsByOwnerNameToTable(DefaultTableModel model, String searchText) {
+        DatabaseSetup.ensureTables();
+        model.setRowCount(0);
+
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) {
+            return;
+        }
+
+        String search = searchText == null ? "" : searchText.trim();
+        String searchPattern = "%" + search + "%";
+        String query = """
+                SELECT client_id, first_name, last_name, phone
+                FROM clients
+                WHERE ? = ''
+                   OR LOWER(first_name) LIKE LOWER(?)
+                   OR LOWER(last_name) LIKE LOWER(?)
+                   OR LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER(?)
+                ORDER BY client_id
+                """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, search);
+            stmt.setString(2, searchPattern);
+            stmt.setString(3, searchPattern);
+            stmt.setString(4, searchPattern);
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -128,6 +231,10 @@ public class ClientDAO {
         DatabaseSetup.ensureTables();
         Connection conn = DBConnection.getConnection();
         if (conn == null) {
+            return false;
+        }
+        if (clientNameExistsForOtherClient(clientId, firstName, lastName)
+                || clientPhoneExistsForOtherClient(clientId, phoneNumber)) {
             return false;
         }
 

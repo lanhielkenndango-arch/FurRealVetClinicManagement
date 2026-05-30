@@ -88,10 +88,10 @@ public class ClientPet extends javax.swing.JFrame {
             dispose();
         });
 
-        TextPlaceholderUtil.applyPlaceholder(SearchByID, "Id");
+        TextPlaceholderUtil.applyPlaceholder(SearchByID, "ID/Phone");
         TextPlaceholderUtil.applyPlaceholder(SearchOwner, "First/Last Name");
         addSearchListener(SearchByID, this::loadClients);
-        addSearchListener(SearchOwner, this::loadPets);
+        addSearchListener(SearchOwner, this::loadClients);
 
         jTable1.getSelectionModel().addListSelectionListener(evt -> {
             if (!evt.getValueIsAdjusting()) {
@@ -194,7 +194,13 @@ public class ClientPet extends javax.swing.JFrame {
 
     private void loadClients() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        clientDAO.loadClientsToTable(model, ValidationUtil.clean(SearchByID.getText(), "Id"));
+        String tableSearch = ValidationUtil.clean(SearchByID.getText(), "ID/Phone");
+        String ownerSearch = ValidationUtil.clean(SearchOwner.getText(), "First/Last Name");
+        if (ValidationUtil.hasBlank(tableSearch) && !ValidationUtil.hasBlank(ownerSearch)) {
+            clientDAO.loadClientsByOwnerNameToTable(model, ownerSearch);
+        } else {
+            clientDAO.loadClientsToTable(model, tableSearch);
+        }
         selectedClientId = -1;
         selectedOwnerName = "";
         OwnerName.setText("Add new pet for");
@@ -319,12 +325,23 @@ public class ClientPet extends javax.swing.JFrame {
             return;
         }
 
+        if (clientDAO.clientNameExistsForOtherClient(clientId, newFirstName, newLastName)) {
+            JOptionPane.showMessageDialog(this,
+                    "Another owner already uses the exact same first name and last name.");
+            return;
+        }
+
+        if (clientDAO.clientPhoneExistsForOtherClient(clientId, newPhone)) {
+            JOptionPane.showMessageDialog(this, "Another owner already uses this phone number.");
+            return;
+        }
+
         if (clientDAO.updateClient(clientId, newFirstName, newLastName, newPhone)) {
             JOptionPane.showMessageDialog(this, "Owner details updated.");
             loadClients();
         } else {
             JOptionPane.showMessageDialog(this,
-                    "Could not update owner. The phone number may already be used.",
+                    "Could not update owner. The owner name or phone number may already be used.",
                     "Update Failed", JOptionPane.ERROR_MESSAGE);
         }
     }
