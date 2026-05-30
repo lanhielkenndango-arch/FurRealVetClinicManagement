@@ -103,6 +103,10 @@ FurRealVetClinicManagement/
 
 <img width="1919" height="1198" alt="image" src="https://github.com/user-attachments/assets/4239b32f-fc2b-4ac9-a82f-e50c8cd99c9a" />
 
+### Video
+
+https://drive.google.com/file/d/1TEnjufmrOsPA1I-PG0R_o2STusF4CKJ1/view?usp=sharing
+
 ## Database
 
 The project uses a MySQL database named `furrealvetclinicmanagement`. The application automatically creates and updates the needed tables through `DatabaseSetup.ensureTables()`, and a standalone SQL script is also included for submission and manual setup.
